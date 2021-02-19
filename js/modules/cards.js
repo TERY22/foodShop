@@ -1,3 +1,5 @@
+import {getResource} from '../services/services';
+
 function cards() {
    class MenuCard {
       constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -8,7 +10,7 @@ function cards() {
          this.price = price;
          this.classes = classes;
          this.parent = document.querySelector(parentSelector);
-         this.transfer = 27;
+         this.transfer = 75;
          this.changeToUAH(); 
       }
 
@@ -40,32 +42,12 @@ function cards() {
       }
     }
 
-    new MenuCard(
-      "img/tabs/vegy.jpg",
-      "vegy",
-      'Меню "Фитнес"',
-      'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-      19,
-      ".menu .container"
-    ).render();
-
-    new MenuCard(
-      "img/tabs/post.jpg",
-      "post",
-      'Меню "Постное"',
-      'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-      24,
-      ".menu .container"
-    ).render();
-
-    new MenuCard(
-      "img/tabs/elite.jpg",
-      "elite",
-      'Меню “Премиум”',
-      'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-      31,
-      ".menu .container"
-    ).render();
+   getResource('http://localhost:3000/menu')
+      .then(data => {
+         data.forEach(({img, altimg, title, descr, price}) => {
+            new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+         });
+      });
 }
 
-module.exports = cards;
+export default cards;

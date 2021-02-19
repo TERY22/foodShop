@@ -1,5 +1,8 @@
-function forms() {
-   const forms = document.querySelectorAll('form');
+import {closeModal, openModal} from './modal';
+import {postData} from '../services/services';
+
+function forms(formSelector,modalTimerId) {
+   const forms = document.querySelectorAll(formSelector);
    const message = {
       loading: 'img/form/spinner.svg',
       success: 'Спасибо! Скоро мы с вами свяжемся',
@@ -7,10 +10,10 @@ function forms() {
    };
 
    forms.forEach(item => {
-      postData(item);
+      bindPostData(item);
    });
 
-   function postData(form) {
+   function bindPostData(form) {
       form.addEventListener('submit', (e) => {
          e.preventDefault();
 
@@ -24,18 +27,10 @@ function forms() {
       
          const formData = new FormData(form);
 
-         const object = {};
-         formData.forEach(function(value, key){
-               object[key] = value;
-         });
+         const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-         fetch('server.php', {
-               method: 'POST',
-               headers: {
-                  'Content-Type': 'application/json'
-               },
-               body: JSON.stringify(object)
-         }).then(data => {
+         postData('http://localhost:3000/requests', json)
+         .then(data => {
                console.log(data);
                showThanksModal(message.success);
                statusMessage.remove();
@@ -51,7 +46,7 @@ function forms() {
       const prevModalDialog = document.querySelector('.modal__dialog');
 
       prevModalDialog.classList.add('hide');
-      openModal();
+      openModal('.modal', modalTimerId);
 
       const thanksModal = document.createElement('div');
       thanksModal.classList.add('modal__dialog');
@@ -66,7 +61,7 @@ function forms() {
          thanksModal.remove();
          prevModalDialog.classList.add('show');
          prevModalDialog.classList.remove('hide');
-         closeModal();
+         closeModal('.modal');
       }, 4000);
    }
 
@@ -75,4 +70,4 @@ function forms() {
       .then(res => console.log(res));
 }
 
-module.exports = forms;
+export default forms;
